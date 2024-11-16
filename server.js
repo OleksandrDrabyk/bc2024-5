@@ -73,6 +73,17 @@ app.get('/notes', (req, res) => {
         }));
     res.json(notes);
 });
+app.post('/write', (req, res) => {
+    const noteName = req.body.note_name;
+    const noteText = req.body.note;
+
+    const notePath = path.join(cachePath, noteName + '.txt');
+    if (fs.existsSync(notePath)) {
+        return res.status(400).send('Note already exists');
+    }
+    fs.writeFileSync(notePath, noteText);
+    res.status(201).send('Note created');
+});
 app.listen(port, host, () => {
   console.log(`Server running at http://${host}:${port}`);
 });
