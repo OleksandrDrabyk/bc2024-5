@@ -56,6 +56,14 @@ app.put('/notes/:name', (req, res) => {
     fs.writeFileSync(notePath, req.body.text);
     res.send('Note updated');
 });
+app.delete('/notes/:name', (req, res) => {
+    const notePath = path.join(cachePath, req.params.name + '.txt');
+    if (!fs.existsSync(notePath)) {
+        return res.status(404).send('Not found');
+    }
+    fs.unlinkSync(notePath);
+    res.send('Note deleted');
+});
 app.listen(port, host, () => {
   console.log(`Server running at http://${host}:${port}`);
 });
