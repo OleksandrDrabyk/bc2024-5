@@ -84,6 +84,9 @@ app.post('/write', (req, res) => {
     fs.writeFileSync(notePath, noteText);
     res.status(201).send('Note created');
 });
+app.get('/UploadForm.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'UploadForm.html'));
+});
 app.listen(port, host, () => {
   console.log(`Server running at http://${host}:${port}`);
 });
