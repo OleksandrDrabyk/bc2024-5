@@ -64,6 +64,15 @@ app.delete('/notes/:name', (req, res) => {
     fs.unlinkSync(notePath);
     res.send('Note deleted');
 });
+app.get('/notes', (req, res) => {
+    const notes = fs.readdirSync(cachePath)
+        .filter(file => file.endsWith('.txt'))
+        .map(file => ({
+            name: file.replace('.txt', ''),
+            text: fs.readFileSync(path.join(cachePath, file), 'utf-8')
+        }));
+    res.json(notes);
+});
 app.listen(port, host, () => {
   console.log(`Server running at http://${host}:${port}`);
 });
