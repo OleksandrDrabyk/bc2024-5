@@ -1,6 +1,10 @@
-const http = require('http');
+const express = require('express');
 const fs = require('fs');
 const { program } = require('commander');
+
+
+const app = express();
+app.use(express.json());
 
 // Налаштування для обробки помилок
 program.configureOutput({
@@ -15,25 +19,20 @@ program
   .option('-c, --cache <cache>', 'cache directory')
   .parse();
 
-const { host, port, cache } = program.opts(); // Отримуємо параметри з командного рядка
+const { host, port, cache } = program.opts(); 
 const fsPromises = fs.promises;
-
-// Перевірки на пропущені параметри і кастомні помилки
 if (!host) {
   console.error('Error: Host parameter is missing. Please specify the --host parameter.');
   process.exit(1);
 }
-
 if (!port) {
   console.error('Error: Port parameter is missing. Please specify the --port parameter.');
   process.exit(1);
 }
-
 if (!cache) {
   console.error('Error: Cache parameter is missing. Please specify the --cache parameter.');
   process.exit(1);
 }
-
 // Якщо параметри є, можна перейти до виконання основної логіки
 fsPromises.mkdir(cache, { recursive: true })
   .catch((err) => {
@@ -41,12 +40,14 @@ fsPromises.mkdir(cache, { recursive: true })
     process.exit(1);
   });
 
-// Створення сервера
-const server = http.createServer((req, res) => {
-  res.writeHead(200, { 'Content-Type': 'text/plain' });
-  res.end(`Server running at http://${host}:${port}\n`);
+  app.get('/notes/:name', (req, res) => {
+    const notePath = path.join(cachePath, req.params.name + '.txt');
+    if (!fs.existsSync(notePath)) {
+        return res.status(404).send('Not found');
+    }
+    const noteContent = fs.readFileSync(notePath, 'utf-8');
+    res.send(noteContent);
 });
-
-server.listen(port, host, () => {
+app.listen(port, host, () => {
   console.log(`Server running at http://${host}:${port}`);
 });
