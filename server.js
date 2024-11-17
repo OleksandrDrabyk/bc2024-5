@@ -5,9 +5,8 @@ const path = require('path');
 const multer = require('multer');
 
 const app = express();
-const upload = multer(); // Ініціалізація multer для обробки form-data
+const upload = multer(); 
 
-// Налаштування командного рядка
 program
   .option('-h, --host <host>', 'server address')
   .option('-p, --port <port>', 'server port')
@@ -35,8 +34,6 @@ const cachePath = cache;
 if (!fs.existsSync(cachePath)) {
   fs.mkdirSync(cachePath, { recursive: true });
 }
-
-// Маршрут для створення нотатки
 app.post('/write', upload.none(), (req, res) => {
   const noteName = req.body.note_name;
   const noteText = req.body.note;
@@ -54,8 +51,8 @@ app.post('/write', upload.none(), (req, res) => {
   fs.writeFileSync(notePath, noteText);
   res.status(201).send('Note created');
 });
-
-// Інші маршрути залишаються без змін
+app.use(express.json()); // Для JSON даних
+app.use(express.urlencoded({ extended: true })); // Для URL-encoded даних
 app.get('/notes/:name', (req, res) => {
   const notePath = path.join(cachePath, req.params.name + '.txt');
   if (!fs.existsSync(notePath)) {
@@ -92,13 +89,9 @@ app.get('/notes', (req, res) => {
     }));
   res.json(notes);
 });
-
-// Маршрут для завантаження HTML форми
 app.get('/UploadForm.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'UploadForm.html'));
 });
-
-// Запуск сервера
 app.listen(port, host, () => {
   console.log(`Server running at http://${host}:${port}`);
 });
