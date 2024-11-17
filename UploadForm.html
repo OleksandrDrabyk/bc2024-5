@@ -1,8 +1,20 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-	<key>URL</key>
-	<string>https://moodle.elct.lnu.edu.ua/pluginfile.php/144347/mod_assign/introattachment/0/UploadForm.html?forcedownload=1</string>
-</dict>
-</plist>
+<!DOCTYPE html>
+<html>
+
+<body>
+
+  <h2>Upload Form</h2>
+
+  <form method="post" action="/write" enctype="multipart/form-data">
+    <label for="note_name_input">Note Name:</label><br>
+    <input type="text" id="note_name_input" name="note_name"><br><br>
+    <label for="note_input">Note:</label><br>
+    <textarea id="note_input" name="note" rows="4" cols="50"></textarea><br><br>
+    <button>Upload</button>
+  </form>
+
+  <p>If you click the "Submit" button, the form-data will be sent to a page called "/upload".</p>
+
+</body>
+
+</html>
