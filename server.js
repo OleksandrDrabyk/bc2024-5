@@ -34,25 +34,34 @@ const cachePath = cache;
 if (!fs.existsSync(cachePath)) {
   fs.mkdirSync(cachePath, { recursive: true });
 }
-app.post('/write', upload.none(), (req, res) => {
-  const noteName = req.body.note_name;
-  const noteText = req.body.note;
-
-  if (!noteName || !noteText) {
-    return res.status(400).send('Note name and text are required');
-  }
-
-  const notePath = path.join(cachePath, `${noteName}.txt`);
-
-  if (fs.existsSync(notePath)) {
-    return res.status(400).send('Note already exists');
-  }
-
-  fs.writeFileSync(notePath, noteText);
-  res.status(201).send('Note created');
-});
+app.post('/write', express.urlencoded({ extended: true }), upload.none(), (req, res) => {
+    const noteName = req.body.note_name;
+    const noteText = req.body.note;
+  
+    // Перевірка даних
+    if (!noteName || !noteText) {
+      return res.status(400).send('Note name and text are required');
+    }
+  
+    const notePath = path.join(cachePath, `${noteName}.txt`);
+  
+    // Перевірка існування нотатки
+    if (fs.existsSync(notePath)) {
+      return res.status(400).send('Note already exists');
+    }
+  
+    // Спроба записати файл
+    try {
+      fs.writeFileSync(notePath, noteText);
+      res.status(201).send('Note created');
+    } catch (error) {
+      console.error('Error writing note:', error);
+      res.status(500).send('Internal server error');
+    }
+  });
+  
 app.use(express.json()); // Для JSON даних
-app.use(express.urlencoded({ extended: true })); // Для URL-encoded даних
+app.use(express.urlencoded({ extended: true }));
 app.get('/notes/:name', (req, res) => {
   const notePath = path.join(cachePath, req.params.name + '.txt');
   if (!fs.existsSync(notePath)) {
